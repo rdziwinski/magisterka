@@ -1,0 +1,142 @@
+%\documentclass[eng,final, oneside, printmode]{mgr} %mwbk
+\documentclass[pl,final]{mgr} %printmode
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage[OT4]{fontenc}
+\usepackage[utf8]{inputenc}
+\frenchspacing
+
+\usepackage{cmap}
+\linespread{1.1} %interlinia
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{latexsym}
+\usepackage{longtable}
+\usepackage{graphicx} 
+\usepackage{geometry}
+\usepackage{pgfplots}
+\usepackage{multirow}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+\pgfplotsset{compat=1.13}
+\usepackage{bookmark}
+\usepackage{listings}
+\usepackage{indentfirst}
+\setcounter{secnumdepth}{6}
+
+\usepackage[nottoc,numbib]{tocbibind}
+
+\setlength{\parindent}{30pt}
+
+\setlength{\parskip}{0pt}
+
+\bookmarksetup{
+	open,
+	addtohook={%
+		\ifnum\bookmarkget{level}<1 %
+		\bookmarksetup{bold}%
+		\fi
+	},
+}
+
+\hypersetup{%
+	colorlinks = true,
+	linkcolor  = black
+}
+
+%\newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{9} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{9}  % for normal
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+\usepackage{listings}
+
+% Python style for highlighting
+\newcommand\pythonstyle{\lstset{
+		language=Python,
+		basicstyle=\ttm,
+		otherkeywords={self},             % Add keywords here
+		keywordstyle=\ttb\color{deepblue},
+		emph={MyClass,__init__},          % Custom highlighting
+		emphstyle=\ttb\color{deepred},    % Custom highlighting style
+		stringstyle=\color{deepgreen},
+		frame=tb,                         % Any extra options here
+		showstringspaces=false,
+		tabsize=3,
+		%numbers=left,
+		breaklines=true  % 
+}}
+
+
+% Python environment
+\lstnewenvironment{python}[1][]
+{
+	\pythonstyle
+	\lstset{#1}
+}
+{}
+
+% Python for external files
+\newcommand\pythonexternal[2][]{{
+		\pythonstyle
+		\lstinputlisting[#1]{#2}}}
+% Python for inline
+\newcommand\pythoninline[1]{{\pythonstyle\lstinline!#1!}}
+
+%\renewcommand\lstlistingname{Dodatek A - spis listingów}
+%\renewcommand\lstlistlistingname{{Dodatek A - spis listingów}}
+
+\author{Rafał Dziwiński}
+\title{Analiza możliwości i implementacja niezawodnego routingu w wirtualnym środowisku High Avability przy wykorzystaniu platformy Kubernetes oraz Calico.}
+
+\engtitle{Analysis of possibilities and implementation of reliable routing in the virtual High Avability environment using the Kubernetes and Calico platforms.}
+\supervisor{dr inż. Waldemar Grzebyk, KTT}
+\field{Telekomunikacja}
+\specialisation{Teleinformatyka i multimedia}
+
+% \renewcommand*\thesection{\arabic{section}.} % zmiana numeracji sekcji 0.X -> X
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\chapter{Wstęp}
+
+
+
+
+
+
+
+
+\begin{thebibliography}{99}
+	\bibitem{kube_doku} 
+	Dokumentacja projektu Kubernetes,
+	\\ \textit{https://kubernetes.io/docs/home/}
+	
+	\bibitem{calico_doku}
+	Dokumentacja projektu Calico \\
+	\textit{https://docs.projectcalico.org/v3.10/introduction/}
+
+	\bibitem{kube_in_action} 
+	Kubernetes in Action, Manning Publications 2017 \\
+	\textit{ISBN: 9781617293726}
+	
+	\bibitem{kube_up_and_run} 
+	Kubernetes: Up and Running, O'Reilly Media, Inc. 2017 \\
+	\textit{ISBN: 9781491935675}
+	
+	\bibitem{docker_fundamentals}
+	Learn Docker - Fundamentals of Docker 18.x, Packt Publishing 2018\\
+	\textit{ISBN: 9781788997027}
+
+\end{thebibliography}
+\end{document}
+
