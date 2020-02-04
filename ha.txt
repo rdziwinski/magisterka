@@ -1,0 +1,627 @@
+apt-get update && apt upgrade -y
+apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+apt-get update
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+cat <<EOF | sudo tee /etc/apt/sources.list.d/docker.list
+deb https://download.docker.com/linux/ubuntu bionic stable
+EOF
+apt-get update && apt-get install -y \
+docker-ce=5:19.03.4~3-0~ubuntu-$(lsb_release -cs) \
+docker-ce-cli=5:19.03.4~3-0~ubuntu-$(lsb_release -cs)
+apt-mark hold docker-ce docker-ce-cli
+
+cat > /etc/docker/daemon.json <<EOF
+{
+"exec-opts": ["native.cgroupdriver=systemd"],
+"log-driver": "json-file",
+"log-opts": {
+"max-size": "100m"
+},
+"storage-driver": "overlay2"
+}
+EOF
+
+mkdir -p /etc/systemd/system/docker.service.d
+
+systemctl daemon-reload
+systemctl restart docker
+  
+  
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl  
+  
+  
+kubeadm init --control-plane-endpoint 10.10.1.100 --pod-network-cidr 192.168.0.0/18 --apiserver-advertise-address 10.10.1.100 --upload-certs 
+  
+  
+  kubeadm join 10.10.1.100:6443 --token pn5ap1.i9uccewrkzb3yt66 \
+    --discovery-token-ca-cert-hash sha256:d84133e970174e540c9d6a666b1247988eb83fb9c191e157089f262138057676 \
+    --control-plane --certificate-key b13c98ce57aa2dcfa863eef351b4a8d2eb845021a9f29bcf2315e0d52b37130d
+  
+  
+
+  
+  
+kubeadm join 10.10.1.100:6443 --token pn5ap1.i9uccewrkzb3yt66 \
+    --discovery-token-ca-cert-hash sha256:d84133e970174e540c9d6a666b1247988eb83fb9c191e157089f262138057676
+  
+
+  
+  sudo apt install haproxy
+   35  sudo vim /etc/haproxy/haproxy.cfg 
+   36  sudo systemctl daemon-reload
+   37  sudo systemctl restart haproxy.service
+
+
+
+
+sudo kubeadm reset
+rm -r ~/.kube
+sudo rm -r /etc/kubernetes
+sudo rm -r /var/lib/etcd
+sudo reboot
+
+sudo ip link set down enp2s0
+
+sudo kubeadm init --control-plane-endpoint 10.10.1.100 --pod-network-cidr 192.168.0.0/18 --upload-certs
+
+
+network:
+    ethernets:
+        enp1s0:
+            addresses:
+            - 10.10.1.1/24
+            nameservers:
+                addresses: [8.8.8.8, 8.8.4.4]
+            routes:
+              - to: 0.0.0.0/0
+                via: 10.10.1.254
+                metric: 100
+
+#        enp2s0:
+#            addresses:
+#            - 212.127.89.84/28
+#            nameservers:
+#                addresses: [8.8.8.8, 8.8.4.4]
+#            routes:
+#              - to: 0.0.0.0/0
+#                via: 212.127.89.94
+#                metric: 10
+        enp7s0:
+            addresses:
+            - 192.168.67.244/22
+        enp8s0:
+            addresses:
+            - 192.168.71.244/22
+        enp9s0:
+            addresses:
+            - 192.168.75.244/22
+    version: 2
+
+pobieramy binarkę z: 
+https://github.com/helm/helm/releases
+
+wget https://get.helm.sh/helm-v3.0.2-linux-amd64.tar.gz
+tar -zxvf helm-v3.0.2-linux-amd64.tar.gz
+sudo mv linux-amd64/helm /usr/local/bin/helm
+
+helm repo add pnnl-miscscripts https://pnnl-miscscripts.github.io/charts
+
+helm install my-dhcp pnnl-miscscripts/dhcpd --version 0.1.5
+
+
+kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.3/manifests/metallb.yaml
+
+https://www.facebook.com/events/181846293190822/
+
+
+Traplexen5721
+
+
+vrrp_instance dmz {
+    interface enp7s0              
+    state MASTER
+    virtual_router_id 64         
+    priority 100                  
+    virtual_ipaddress {
+        192.168.67.254/22      
+    }
+}
+
+vrrp_instance pracownicy {
+    interface enp8s0           
+    state MASTER
+    virtual_router_id 68  
+    priority 100            
+    virtual_ipaddress {
+        192.168.71.254/22        
+    }
+}
+
+vrrp_instance administratorzy {
+    interface enp9s0             
+    state MASTER
+    virtual_router_id 72      
+    priority 100              
+    virtual_ipaddress {
+        192.168.75.254/22     
+    }
+}
+
+
+
+
+
+
+vrrp_instance dmz {
+    interface enp7s0          
+    state BACKUP
+    virtual_router_id 64     
+    priority 10                
+    virtual_ipaddress {
+        192.168.67.254/22     
+    }
+}
+
+vrrp_instance pracownicy {
+    interface enp8s0            
+    state BACKUP
+    virtual_router_id 68  
+    priority 10             
+    virtual_ipaddress {
+        192.168.71.254/22   
+    }
+}
+
+vrrp_instance administratorzy {
+    interface enp9s0          
+    state BACKUP
+    virtual_router_id 72      
+    priority 10               
+    virtual_ipaddress {
+        192.168.75.254/22        
+    }
+}
+
+
+DHCP:
+1. instalacja z helma
+2. edit confgmaps
+3. dział :)
+
+
+Calicoctl:
+
+
+
+
+
+
+
+
+
+
+
+
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-01-enp7s0
+  labels: 
+    interface: enp7s0
+    subnet: dmz
+spec:
+  interfaceName: enp7s0
+  node: k8s-04-worker
+
+---
+
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-01-enp8s0
+  labels: 
+    interface: enp8s0
+    subnet: pracownicy
+spec:
+  interfaceName: enp8s0
+  node: k8s-04-worker
+
+---
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-01-enp9s0
+  labels: 
+    interface: enp9s0
+    subnet: administratorzy
+spec:
+  interfaceName: enp9s0
+  node: k8s-04-worker
+  
+---
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-01-enp7s0
+  labels: 
+    interface: enp7s0
+    subnet: dmz
+spec:
+  interfaceName: enp7s0
+  node: k8s-05-worker
+
+---
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-01-enp8s0
+  labels: 
+    interface: enp8s0
+    subnet: pracownicy
+spec:
+  interfaceName: enp8s0
+  node: k8s-05-worker
+
+---
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-01-enp9s0
+  labels: 
+    interface: enp9s0
+    subnet: administratorzy
+spec:
+  interfaceName: enp9s0
+  node: k8s-05-worker
+
+---
+  
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-01-enp7s0
+  labels: 
+    interface: enp7s0
+    subnet: dmz
+spec:
+  interfaceName: enp7s0
+  node: k8s-06-worker
+
+---
+
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-01-enp8s0
+  labels: 
+    interface: enp8s0
+    subnet: pracownicy
+spec:
+  interfaceName: enp8s0
+  node: k8s-06-worker
+
+---
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-01-enp9s0
+  labels: 
+    interface: enp9s0
+    subnet: administratorzy
+spec:
+  interfaceName: enp9s0
+  node: k8s-06-worker
+
+
+
+
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-01-enp6s0
+  labels: 
+    interface: public
+spec:
+  interfaceName: enp6s0
+  node: k8s-01-master
+
+---
+
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-02-enp6s0
+  labels: 
+    interface: public
+spec:
+  interfaceName: enp6s0
+  node: k8s-02-master
+
+---
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-03-enp6s0
+  labels: 
+    interface: public
+spec:
+  interfaceName: enp6s0
+  node: k8s-03-master
+  
+---
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-04-enp6s0
+  labels: 
+    interface: public
+spec:
+  interfaceName: enp6s0
+  node: k8s-04-worker
+
+---
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-05-enp6s0
+  labels: 
+    interface: public
+spec:
+  interfaceName: enp6s0
+  node: k8s-05-worker
+  
+---
+
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: k8s-06-enp6s0
+  labels: 
+    interface: public
+spec:
+  interfaceName: enp6e0
+  node: k8s-06-worker
+
+  
+  
+    - action: Allow
+    protocol: ICMP
+  - action: Allow
+    protocol: TCP
+    destination:
+      ports:
+      - 55222    
+
+      
+      
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: dhcpd
+  labels:
+    app: dhcpd
+spec:
+  selector:
+    matchLabels:
+      app: dhcpd
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: dhcpd
+    spec:
+      hostNetwork: true
+      containers:
+      - name: main
+        image: docker.io/pnnlmiscscripts/dhcpd:4.4.1-4
+        imagePullPolicy: Always
+        command:
+        - /bin/sh
+        - -ec
+        - |
+          touch /var/lib/dhcp/dhcpd.leases
+          chown daemon.daemon /var/lib/dhcp/dhcpd.leases
+          chown daemon.daemon /var/lib/dhcp
+          chown daemon.daemon /var/run/dhcp
+          dhcpd -cf /etc/dhcp/dhcpd.conf -d -user daemon -group daemon enp7s0 enp8s0 enp9s0
+        resources:
+#FIXME this and pixiecore block each other....
+#       ports:
+#       - containerPort: 67
+#         name: dhcp
+#         protocol: UDP
+        volumeMounts:
+        - name: config
+          mountPath: /etc/dhcp
+      volumes:
+      - name: config
+        configMap:
+          name: dhcpd
+
+          
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dhcpd
+  labels:
+    app: dhcpd
+data:
+  dhcpd.conf: |
+    default-lease-time 600;
+    max-lease-time 7200;
+
+    ddns-update-style none;
+    subnet 192.168.68.0 netmask 255.255.252.0 {
+      range 192.168.68.10 192.168.68.240;
+      option routers 192.168.71.254;
+      option domain-name "k8s.k.pl";
+      option domain-name-servers 8.8.4.4;
+      option subnet-mask 255.255.252.0;
+    }
+    subnet 192.168.72.0 netmask 255.255.252.0 {
+      range 192.168.72.10 192.168.72.240;
+      option routers 192.168.75.254;
+      option domain-name "k8s.k.pl";
+      option domain-name-servers 8.8.4.4;
+      option subnet-mask 255.255.252.0;
+    }
+
+          
+          
+
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bird
+  labels:
+    app: bird
+spec:
+  selector:
+    matchLabels:
+      app: bird
+  template:
+    metadata:
+      labels:
+        app: bird
+    spec:
+      hostNetwork: true
+      containers:
+      - name: my-bird
+        image: rdziwinski/my-bird:latest
+        imagePullPolicy: Always
+        command:
+        - birdc configure
+        volumeMounts:
+        - name: config
+          mountPath: /etc/bird
+      volumes:
+      - name: config
+        configMap:
+          name: bird
+          
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bird
+  labels:
+    app: bird
+data:
+  bird.conf: |
+    log syslog all;
+    log "/var/log/bird.log" { debug, trace, info, remote, warning, error, auth, fatal, bug };
+
+
+    protocol direct {
+    }
+
+    protocol kernel {
+        ipv4 {
+            export all;
+        };
+        persist;
+        scan time 10;        
+    }
+
+    protocol device {
+            scan time 1;            # Scan interfaces every 10 seconds
+    }
+
+    protocol bgp {
+            local as 64496;        # Use a private AS number
+            neighbor 212.127.89.89 as 65000;    # Our neighbor ...
+            multihop;                            # ... which is connected indirectly
+            ipv4 {
+                    export all;
+                    import all;
+                    next hop self; # advertise this router as next hop
+            };
+    }
+
