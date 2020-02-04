@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bird
+spec:
+  selector:
+    matchLabels:
+      app: bird
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: bird
+    spec:
+      volumes:
+      - name: bird-config
+        hostPath:
+          path: /home/rdziwinski/bird/test/plik.txt
+      containers:
+      - name: my-bird
+        image: rdziwinski/my-bird:latest
+        ports:
+        - containerPort: 179
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: bird-config
+          mountPath: /etc/bird/test
+        
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: bird
+spec:
+  selector:
+    app: bird
+  ports:
+  - protocol: TCP
+    port: 179
+    targetPort: 179
+  type:
+    LoadBalancer
