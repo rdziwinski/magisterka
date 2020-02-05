@@ -90,6 +90,9 @@
 \tableofcontents
 
 \chapter{Wstęp}
+Jeszcze kilka lat temu chcąc wdrożyć zaawansowaną aplikację rozdzielając poszczególne procesy używano maszyn wirtualnych. Był to najlepszy sposób na izolację procesów mogących w niepożądany sposób wpływać na siebie nawzajem. Takie rozwiązanie umożliwiało przeniesienie usługi do chmury. Pozwalało to na delegowanie odpowiedzialności za infrastrukturę fizyczną firmie trzeciej. Obecnie nowoczesne aplikacje tworzone są jako szereg współpracujących ze sobą mikroserwisów i umieszczane w kontenerach. Coraz więcej firm decyduje się na uruchomienie swoich aplikacji w chmurze, poza swoją infrastrukturą co przynosi wiele niekwestionowanych korzyści. Dynamiczny rozwój tej dziedziny przyczynił się do stworzenia takich rozwiązań jak Docker oraz Kubernetes.
+
+Zmiany na rynku zachodzą również w branży sieciowej. Coraz więcej mówi się o Software Definied Network oraz o końcu konfiguracji urządzeń przez CLI. Wielu producentów tworzy API (Interfejs programowania aplikacji) do swoich urządzeń oraz zachęca do ich konfiguracji w ten sposób. Jednym z wielu rozwiązań zapewniających routing w środowiskach zwirtualizowanych jest Calico.  Możliwe jest połączenie dwóch obecnie najpopularniejszych trendów w branży IT? Celem pracy jest odpowiedź na to pytanie. Ponadto zostanie poddane analizie możliwość stworzenia rozwiązania niezawodnego routingu w środowisku zwirtualizowanym. Jako orkiestrator kontenerów wykorzystano platformę Kubernetes. Sieć zostanie zbudowana przy wykorzystaniu narzędzi Calico oraz BIrd.
 
 \chapter{Cel i zakres pracy}
 
@@ -900,9 +903,9 @@ Z powodu ograniczeń technicznych i braku możliwości porównania z podobną pl
 //Ewentualnie można porównać niektóre testy z komputerem fizycznym wpiętym w ten sam segment sieci.
 \begin{enumerate}
 	\item Wysyłanie pliku na serwer.
-	\item Korzystanie z internetu.
+	\item Pomiar średniego czasu odpowiedzi.
 	\item Przesyłanie danych między siecią Administratorów a pracowników.
-	\item Czas dostępu do publicznie dostępnej strony www.
+	\item Czas dostępu do strony www w klastrze.
 \end{enumerate}
 Środowisko testowe, tj. klaster Kubernetes został stworzony jako zespół maszyn wirtualnych. Również komputery pracowników to maszyny wirtualne uruchomione na tym samym komputerze. Jako maszyna supervisor posłużył zmodyfikowany komputer MacPro 4,1 Early 2009. Specyfikacja kluczowych parametrów znajduje się poniżej:
 \begin{itemize}
@@ -948,8 +951,23 @@ Trasa do serwera jest następująca:
 	\item 79.110.205.97
 \end{enumerate}
 
-
 Dla porównania taki sam test przeprowadzono z komputera bezpośrednio wpiętego do sieci lokalnej, bez wykorzystania technologii wirtualizacji oraz klastra. Wyniki testów prezentują się następująco:
+
+/tu będa wyniki.
+
+\subsection{Pomiar średniego czasu odpowiedzi.}
+Drugi test polega na pomiarze średniego czasu odpowiedzi serwera w internecie. W tym celu wykorzystano narzędzie mtr. Pomiar został wykonany z maszyny wirtualnej symulującej komputer pracownika. Test uruchomiono w godzinach nocnych. Parametry testu są następujące:
+\begin{itemize}
+	\item Czas trwania: około 10 sekund.
+	\item Adres docelowy: 8.8.8.8 (Google DNS)
+	\item Protokół: ICMP
+	\item Interwał wysyłania pakietów: 0.1 sekunda.
+\end{itemize}
+
+//tu będzie wynik testu mtr
+
+%\subsection{Czas dostępu do strony www w klastrze}
+%Ostatnim z testów wydajności jest pomiar czasu dostępu do serwera www z poza sieci operatora udostępniającego adresacje publiczną dla klastra. Jako serwer www posłuży obraz %\textit{gcr.io/google-samples/node-hello} symulujący serwer www.
 
 
 
