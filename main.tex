@@ -90,9 +90,9 @@
 \tableofcontents
 
 \chapter{Wstęp}
-Jeszcze kilka lat temu chcąc wdrożyć zaawansowaną aplikację rozdzielając poszczególne procesy używano maszyn wirtualnych. Był to najlepszy sposób na izolację procesów mogących w niepożądany sposób wpływać na siebie nawzajem. Takie rozwiązanie umożliwiało przeniesienie usługi do chmury. Pozwalało to na delegowanie odpowiedzialności za infrastrukturę fizyczną firmie trzeciej. Obecnie nowoczesne aplikacje tworzone są jako szereg współpracujących ze sobą mikroserwisów i umieszczane w kontenerach. Coraz więcej firm decyduje się na uruchomienie swoich aplikacji w chmurze, poza swoją infrastrukturą co przynosi wiele niekwestionowanych korzyści. Dynamiczny rozwój tej dziedziny przyczynił się do stworzenia takich rozwiązań jak Docker oraz Kubernetes.
+Jeszcze kilka lat temu chcąc wdrożyć zaawansowaną aplikację rozdzielając poszczególne procesy używano maszyn wirtualnych. Był to najlepszy sposób na izolację procesów mogących w niepożądany sposób wpływać na siebie nawzajem. Takie rozwiązanie umożliwiało przeniesienie usługi do chmury. Pozwalało to na delegowanie odpowiedzialności za infrastrukturę fizyczną firmie trzeciej. Obecnie nowoczesne aplikacje tworzone są jako szereg współpracujących ze sobą mikroserwisów i umieszczane w kontenerach. Coraz więcej firm decyduje się na uruchomienie swoich aplikacji w chmurze, poza swoją infrastrukturą. Przynosi to wiele niekwestionowanych korzyści. Dynamiczny rozwój tej dziedziny przyczynił się do stworzenia takich rozwiązań jak Docker oraz Kubernetes.
 
-Zmiany na rynku zachodzą również w branży sieciowej. Coraz więcej mówi się o Software Definied Network oraz o końcu konfiguracji urządzeń przez CLI. Wielu producentów tworzy API (Interfejs programowania aplikacji) do swoich urządzeń oraz zachęca do ich konfiguracji w ten sposób. Jednym z wielu rozwiązań zapewniających routing w środowiskach zwirtualizowanych jest Calico.  Możliwe jest połączenie dwóch obecnie najpopularniejszych trendów w branży IT? Celem pracy jest odpowiedź na to pytanie. Ponadto zostanie poddane analizie możliwość stworzenia rozwiązania niezawodnego routingu w środowisku zwirtualizowanym. Jako orkiestrator kontenerów wykorzystano platformę Kubernetes. Sieć zostanie zbudowana przy wykorzystaniu narzędzi Calico oraz BIrd.
+Zmiany na rynku zachodzą również w branży sieciowej. Coraz więcej mówi się o Software Definied Network oraz o końcu konfiguracji urządzeń przez CLI. Wielu producentów tworzy API (Interfejs programowania aplikacji) do swoich urządzeń, a także zachęca do ich konfiguracji w ten sposób. Jednym z wielu rozwiązań zapewniających routing w środowiskach zwirtualizowanych jest Calico.  Możliwe jest połączenie dwóch obecnie najpopularniejszych trendów w branży IT? Celem pracy jest odpowiedź na to pytanie. Ponadto zostanie poddane analizie możliwość stworzenia rozwiązania niezawodnego routingu w środowisku zwirtualizowanym. Jako orkiestrator kontenerów wykorzystano platformę Kubernetes. Sieć zostanie zbudowana przy wykorzystaniu narzędzi Calico oraz Bird.
 
 \chapter{Cel i zakres pracy}
 
@@ -122,6 +122,7 @@ Zmiany na rynku zachodzą również w branży sieciowej. Coraz więcej mówi si�
 %bądź wielu z jej elementów.
 %7. Opracowanie wniosków z przeprowadzonej analizy i testów.
 \chapter{Część teoretyczna}
+będzie uzupełniona
 \section{Słownik pojęć}
 \begin{description}
 \item[Pod] najmniejsza możliwa do wdrożenia jednostka obliczeniowa, zarządzana przez platformę Kubernetes.
@@ -192,7 +193,9 @@ Jak już wspomniano, master node służy do zarządzania klastrem oraz kontenera
 	\item [kube-apiserver] komponent control plane kubernetesa odpowiedzialny za komunikację użytkownika z platformą. 
 	\item [etcd] silnie spójny i wysoce dostępny, rozproszony magazyn w formie klucz-wartość. Zapewnia niezawodny sposób przechowywania konfiguracji kubernetesa. Jeden z ważniejszych komponentów, któremu konieczne jest zapewnienie nadmiarowości. Aby móc tolerować awarię jednego z modułów, konieczne jest stworzenie klastra z ilością trzech.
 	\item [kube-scheduler] komponent, który w momencie wykrycia utworzenia nowego poda przypisuje go do odpowiedniego node bądź wielu. Decyzje te podejmuje na podstawie wymagań dotyczących zasobów/sieci poda oraz obciążenia obecnych workerów w klastrze. 
-	\item [kube-controller-manager] komponent służący do uruchamiania kontrolerów. (https://kubernetes.io/docs/concepts/architecture/controller/) Każdy z kontrolerów jest osobnym procesem, lecz aby zwiększyć wydajność kompilowane są do jednego pliku binarnego. Zarządza on następującymi kontrolerami:
+	\item [kube-controller-manager] komponent służący do uruchamiania kontrolerów.
+	
+	(https://kubernetes.io/docs/concepts/architecture/controller/) Każdy z kontrolerów jest osobnym procesem, lecz aby zwiększyć wydajność kompilowane są do jednego pliku binarnego. Zarządza on następującymi kontrolerami:
 	\item [node controller] odpowiada za reakcje, w momencie awarii jednego z node.
 	\item [replication controller] zapewnia nadmiarowość podów w klastrze.
 	\item [endpoints controller] zapewnia spójność usług oraz podów
@@ -245,14 +248,14 @@ Przykład zastosowania wszystkich trzech rodzajów ruchu, zaprezentowano na graf
 W celu realizacji pracy magisterskiej, stworzono klaster Kubernetes’a składający się z 6 node. W celu symulacji maszyn fizycznych, wykorzystano narzędzie KVM. Każdy z node, to osobna maszyna wirtualna,  połączona ze sobą przy pomocy sieci izolowanej. Dodatkowo, każdy z node posiada adres publiczny, w celu zapewnienia dostępu do internetu. Systemem operacyjnym dla node jest Ubuntu 18.04.3 LTS. Reasumując, wykorzystano maszyny wirtualne zgodnie z tabelą \ref{tab:kvm_node}.
 
 \begin{table}[h!]
-	\begin{tabular}{lllllllll}
-		Nazwa hosta   & Adres IP lokalny & Adres IP publiczny &  &  & CPU    & RAM  & Dysk &  \\
-		k8s-01-master & 10.10.1.1        & 212.127.89.81     &  &  & 4 Core & 4 GB & 40GB &  \\
-		k8s-02-master & 10.10.1.2        & 212.127.89.82     &  &  & 4 Core & 4 GB & 40GB &  \\
-		k8s-03-master & 10.10.1.3        & 212.127.89.83     &  &  & 4 Core & 4 GB & 40GB &  \\
-		k8s-04-worker & 10.10.1.4        & 212.127.89.84     &  &  & 2 Core & 2 GB & 40GB &  \\
-		k8s-05-worker & 10.10.1.5        & 212.127.89.85     &  &  & 2 Core & 2 GB & 40GB &  \\
-		k8s-06-worker & 10.10.1.6        & 212.127.89.86     &  &  & 2 Core & 2 GB & 40GB & 
+	\begin{tabular}{llllllll}
+		Nazwa hosta   & Adres IP lokalny & Adres IP publiczny &  &  & CPU    & RAM  &  \\
+		k8s-01-master & 10.10.1.1        & 212.127.89.81     &  &  & 4 Core & 4 GB &  \\
+		k8s-02-master & 10.10.1.2        & 212.127.89.82     &  &  & 4 Core & 4 GB &  \\
+		k8s-03-master & 10.10.1.3        & 212.127.89.83     &  &  & 4 Core & 4 GB &  \\
+		k8s-04-worker & 10.10.1.4        & 212.127.89.84     &  &  & 2 Core & 2 GB &  \\
+		k8s-05-worker & 10.10.1.5        & 212.127.89.85     &  &  & 2 Core & 2 GB &  \\
+		k8s-06-worker & 10.10.1.6        & 212.127.89.86     &  &  & 2 Core & 2 GB &  
 	\end{tabular}
 	\label{tab:kvm_node}
 	\caption{Lista node klastra}
@@ -272,10 +275,8 @@ Jako loadbalancer użyto narzędzia HAProxy zainstalowanego na maszynie wirtualn
 	\label{tab:kvm_lb}
 	\caption{Parametry loadbalancer'a.}
 \end{table}
-Pakiet haproxy znajduje się w repozytorium, zatem:
-\begin{lstlisting}[language=Bash]
-sudo apt install haproxy
-\end{lstlisting}
+Pakiet haproxy znajduje się w repozytorium, zatem możemy zainstalować go poleceniem \textit{sudo apt install haproxy}
+
 Następnie należy skonfigurować loadbalancer za pomocą pliku \textit{haproxy.cfg} w katalogu \textit{/etc/haproxy/}. Zawartość pliku konfiguracyjnego znajduje się poniżej.
 
 \begin{lstlisting}[language=Bash]
@@ -433,7 +434,7 @@ systemctl restart kubelet
 \end{lstlisting}
 
 \section{Calico}
-Jak już wspomniano, do zapewnienia sieci wewnątrz klastra wykorzystano narzędzie Calico. Instalacja jego odbywa kolejno w trzech krokach: 
+Jak już wspomniano, do zapewnienia sieci wewnątrz klastra wykorzystano narzędzie Calico. Instalacja go odbywa się kolejno w trzech krokach: 
 
 \begin{enumerate}
 	\item Pobranie pliku konfiguracyjnego ze strony: \\ \textit{https://docs.projectcalico.org/v3.11/manifests/calico.yaml}
@@ -473,8 +474,7 @@ kube-scheduler-k8s-01-master               1/1     Running   44         7d22h
 kube-scheduler-k8s-02-master               1/1     Running   36         7d23h
 kube-scheduler-k8s-03-master               1/1     Running   33         7d23h
 \end{lstlisting}
-
-Aby móc pracować z calico konieczne jest zainstalowanie narzędzia calicoctl. Aby to zrobić należy pobrać plik binarny z repozytorium calico w serwisie github oaz skopiować do właściwego katalogu.
+Podczas pracy z Calico używane jest narzędzie calicoctl, zatem należy je zainstalować. Pierwszy krokiem ku temu jest pobranie pliku binarnego z repozytorium Calico w serwisie github, oraz skopiowanie do właściwego katalogu.
 \begin{enumerate}
 	\item curl -O -L  https://github.com/projectcalico/calicoctl/releases/download/v3.11.2/calicoctl
 	\item chmod +x calicoctl
@@ -486,7 +486,7 @@ export KUBECONFIG=/home/rdziwinski/.kube/config
 export DATASTORE_TYPE=kubernetes
 \end{lstlisting}
 
-Aby uniknąć błędów w czasie pracy z klastrem, gdzie każdy z node ma kilka interfejsów sieciowych należy na stałe ustalić adres IP dla każdego z nich. Aby to zrobić, stworzono plik konfiguracyjny \textit{nodes.yaml} w którym powielono poniższą konfiguracje dla każdego z node zmieniając jedynie wartość \textit{ipv4Address}.
+Aby uniknąć błędów w czasie pracy z klastrem, gdzie każdy z node ma kilka interfejsów sieciowych należy na stałe ustalić adres IP dla każdego z nich. W tym celu stworzono plik konfiguracyjny \textit{nodes.yaml}, w którym powielono poniższą konfiguracje dla każdego z node zmieniając jedynie wartość \textit{ipv4Address}.
 \begin{lstlisting}[language=Bash]
 apiVersion: projectcalico.org/v3
 kind: Node
@@ -528,7 +528,7 @@ Dodatkowo wszystkie trzy worker node posiadają interfejsy służące do wymiany
 
 \section{Sieci wewnętrzne}
 Sieć firmową podzielono na 3 podsieci wewnętrzne.
-\begin{table}[]
+\begin{table}[h!]
 	\begin{tabular}{lll}
 		Nazwa sieci          & Adresacja       & Interfejs \\
 		DMZ                  & 192.168.64.0/22 & enp7s0    \\
@@ -540,7 +540,7 @@ Sieć firmową podzielono na 3 podsieci wewnętrzne.
 \end{table}
 
 \subsection{HostEndpoints}
-Jak już wspomniano Calico wykorzystuje zasób hostendpoints aby zdefiniować punkty końcowe sieci fizycznej. W tym celu należy stworzyć osobny zasób dla każdego z interfejsu fizycznego node, wykorzystywanego do działania sieci fizycznej. Poniżej przedstawiono fragment pliku konfiguracyjnego dla interfejsu wykorzystywanego przez pracowników.
+Jak już wspomniano Calico wykorzystuje zasób hostendpoints aby zdefiniować punkty końcowe sieci fizycznej. W tym celu, należy stworzyć osobny zasób, dla każdego z interfejsu fizycznego node, wykorzystywanego do działania sieci fizycznej. Poniżej przedstawiono fragment pliku konfiguracyjnego dla interfejsu wykorzystywanego przez pracowników.
 
 \begin{lstlisting}[language=Bash]
 apiVersion: projectcalico.org/v3
@@ -859,14 +859,16 @@ vrrp_instance administratorzy {
 	}
 }
 \end{lstlisting}
-Stworzone zostały trzy instancję protokołu VRRP, po jednej dla każdej z podsieci. Konfiguracja dla każdego node jest bardzo zbliżona. Różnicą między nimi jest inna wartość parametru \textit{state} oraz \textit{priority}. Kolejno BACKUP oraz priorytet 100 i 50. Domyślnie protokół VRRP działa w trybie multicast, natomiast wykorzystanie maszyn wirtualnych wymusiło zmianę trybu pracy na unicast. Jest to spowodowane ograniczeniem możliwości przesyłania pakietów multicastowych poprzez interfejsy VTEP w KVM.
+Stworzone zostały trzy instancję protokołu VRRP, po jednej dla każdej z podsieci. Konfiguracja dla każdego node jest bardzo zbliżona. Różnicą między nimi jest inna wartość parametru \textit{state} i \textit{priority}. Kolejno BACKUP oraz priorytet 100 i 50. Domyślnie protokół VRRP działa w trybie multicast, natomiast wykorzystanie maszyn wirtualnych wymusiło zmianę trybu pracy na unicast. Jest to spowodowane ograniczeniem możliwości przesyłania pakietów multicastowych poprzez interfejsy VTEP w KVM.
 
 
 \section{Peering z zewnętrznym routerem BGP}
 
 
-\chapter{Porównanie rozwiązania zwirtualizowanego do fizycznego} w oparciu o przyjęte kryteria.
-Obecnie najpopularniejszą formą zapewnienia routingu w sieci jest wykorzystanie klasycznych routerów oraz przełączników sprzętowych. W zależności od wielkości firmy, stosuje się bardzo proste routery domowe, bądź bardziej zaawansowane produkty firm takich jak Cisco bądź Juniper. W przypadku gdy korporacja wymaga zaawansowanego routingu nie tylko dla potrzeb sieci wewnętrznej w jednej placówce, konieczne jest zakup dodatkowych urządzeń. Potrzebne są wtedy wydaje routery BGP bądź Firewalle potrafiące zestawić wydajne tunele VPN. 
+\chapter{Porównanie rozwiązania zwirtualizowanego do fizycznego} 
+
+//w oparciu o przyjęte kryteria.
+Obecnie najpopularniejszą formą zapewnienia routingu w sieci jest wykorzystanie klasycznych routerów oraz przełączników sprzętowych. W zależności od wielkości firmy, stosuje się bardzo proste routery domowe, bądź bardziej zaawansowane produkty firm takich jak Cisco oraz Juniper. W przypadku gdy korporacja wymaga zaawansowanego routingu nie tylko dla potrzeb sieci wewnętrznej w jednej placówce, konieczne jest zakup dodatkowych urządzeń. Potrzebne są wtedy wydaje routery BGP bądź Firewalle potrafiące zestawić wydajne tunele VPN. 
 
 Obecnie coraz więcej usług jest realizowanych przez oprogramowanie zainstalowane na serwerach. Fizyczne urządzenia dedykowane pod dany rodzaj usług stają się coraz mniej popularne. W niniejszym rozdziale zostanie poddana analiza zalet oraz wad rozwiązania fizycznego do zwirtualizowanego. Przez pojęcie zwirtualizowanego rozumie się wykorzystanie zyskujących na popularności kontenerów, wraz z Orkiestratorem Kubernetes, oraz siecią realizowaną przez Calico. Kryteria porównawcze które przyjęto to:
 \begin{itemize}
@@ -966,14 +968,27 @@ Drugi test polega na pomiarze średniego czasu odpowiedzi serwera w internecie. 
 
 //tu będzie wynik testu mtr
 
-%\subsection{Czas dostępu do strony www w klastrze}
-%Ostatnim z testów wydajności jest pomiar czasu dostępu do serwera www z poza sieci operatora udostępniającego adresacje publiczną dla klastra. Jako serwer www posłuży obraz %\textit{gcr.io/google-samples/node-hello} symulujący serwer www.
-
+\subsection{Czas dostępu do strony www w klastrze}
+Ostatnim z testów wydajności jest pomiar czasu dostępu do serwera www z poza sieci operatora udostępniającego adresacje publiczną dla klastra. Jako serwer www posłuży obraz \textit{gcr.io/google-samples/node-hello}.
+Parametry testu są następujące:
+\begin{itemize}
+	\item Czas trwania: około 10 sekund.
+	\item Adres źródłowy: 89.151.33.160
+	\item Protokół: ICMP
+	\item Interwał wysyłania pakietów: 0.1 sekunda.
+\end{itemize}
+//tu będzie wynik testu mtr
 
 
 
 \section{Testy niezawodności}
-
+Podczas testów niezawodności klastra wywołane były dwie awarie, oraz obserwowano wpływ na wszystkie krytyczne usługi klastra. Pierwsza z nich dotyczyła usterki sprzętowej master node, natomiast druga worker node. Monitorowano czas przywrócenia następujących usług:
+\begin{enumerate}
+	\item Serwer www
+	\item Dostęp do internetu z maszyny wirtualnej \textit{pracownicy}
+	\item Serwer DHCP
+	\item + jeszcze coś wymyślę.
+\end{enumerate}
 
 
 
